@@ -1,46 +1,37 @@
-#2) Navegacióny verificacíón de catalogo
+#2) Navegación y verificación de catalogo
+import pytest
+from pages import InventoryPage
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+@pytest.mark.catalogo
+@pytest.mark.regression
+def test_titulo_inventario(usuario_logueado: InventoryPage):
+    assert usuario_logueado.obtener_titulo() == "Products"
 
-from utils.login import login
-from utils.helpers import esperar, driver_create #waiters y login importados como helpers
+@pytest.mark.catalogo
+@pytest.mark.regression
+def test_productos_visibles(usuario_logueado: InventoryPage):
+    assert len(usuario_logueado.obtener_productos()) > 0
 
-def test_catalogo():
+@pytest.mark.catalogo
+def test_agregar_productos_actualizar_carrito(usuario_logueado: InventoryPage):
+    usuario_logueado.agregar_primer_producto()
+    assert usuario_logueado.obtener_contador_carrito() == 1
 
-    driver = driver_create()
+@pytest.mark.catalogo
+def test_esta_filtro_visible(usuario_logueado: InventoryPage):
+    assert usuario_logueado.esta_filtro_visible()
 
-    try:
+@pytest.mark.catalogo
+def test_esta_menu_visible(usuario_logueado: InventoryPage):
+    assert usuario_logueado.esta_menu_visible()
 
-        login(driver) # Login automatizado
+@pytest.mark.catalogo
+@pytest.mark.regression
+def test_ir_al_carrito(usuario_logueado: InventoryPage):
+    usuario_logueado.ir_al_carrito()
+    assert "cart.html" in usuario_logueado.driver.current_url
 
-        #Espera explicita del catalogo
-        esperar(driver, EC.presence_of_element_located((By.CLASS_NAME, "inventory_item")))
-
-        # Validamos nuevamente el titulo
-        titulo = driver.find_element(By.CSS_SELECTOR,'div.header_secondary_container .title').text
-
-        assert titulo == 'Products'
-
-        #Verifica la existencia de productos
-
-        productos = driver.find_elements(By.CSS_SELECTOR, 'div.inventory_item')
-        print(f'Se encontraron {len(productos)} productos.')
-        assert len(productos) > 0
-
-        #Impresion de nombre y valor del producto
-
-        producto0 = productos[0].find_element(By.CSS_SELECTOR, 'div.inventory_item_name').text
-        precio0 = productos[0].find_element(By.CSS_SELECTOR, 'div.inventory_item_price').text
-        print(f'Nombre: {producto0}, Precio: {precio0}')
-
-        #Localizacíón de la funcionalidad de filtros
-        filtro = driver.find_element(By.CLASS_NAME,'product_sort_container')
-        assert filtro.is_displayed()
-
-        #Localización de Hamburguer menu 
-        menu = driver.find_element(By.ID, 'react-burger-menu-btn')
-        assert menu.is_displayed()
-
-    finally:
-        driver.quit() #Cierre limpio.
+@pytest.mark.catalogo
+def test_hacer_logout(usuario_logueado: InventoryPage):
+    usuario_logueado.hacer_logout()
+    assert "saucedemo.com" in usuario_logueado.driver.current_url

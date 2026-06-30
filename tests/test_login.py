@@ -1,40 +1,19 @@
 #1) Automatización de login
+import pytest
+from pages import LoginPage, InventoryPage
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-
-from utils.helpers import esperar, driver_create #helpers de expected_conditions
-
-def test_login():
+@pytest.mark.parametrize("usuario,password,deberia_funcionar", [
+    ("standard_user", "secret_sauce", True),
+    ("locked_out_user", "secret_sauce", False),
+])
+@pytest.mark.smoke
+@pytest.mark.login
+@pytest.mark.regression
+def test_login_exitoso(driver, usuario, password, deberia_funcionar):
+    login_page = LoginPage(driver)
+    login_page.abrir().login_completo(usuario, password)
     
-    driver = driver_create()
-
-    try:
-
-        driver.get("https://saucedemo.com") #Ingreso a la pagina
-
-        #Espera explicita
-        username = esperar(
-            driver,
-            EC.presence_of_element_located((By.ID, "user-name"))
-        )
-
-        username.send_keys("standard_user")
-
-        driver.find_element(By.ID, 'password').send_keys('secret_sauce')
-        driver.find_element(By.CSS_SELECTOR, 'input[type="submit"]' ).click()
-
-        #Validación de inventario
-
-        assert '/inventory.html' in driver.current_url
-
-        #Asercion de titulos
-        
-        titulo = driver.find_element(By.CSS_SELECTOR, 'div.header_secondary_container .title').text
-        assert titulo == 'Products'
-
-        logo = driver.find_element(By.CLASS_NAME, "app_logo").text
-        assert logo == "Swag Labs"
-
-    finally:
-        driver.quit()   #Cierre limpio.
+    if deberia_funcionar:
+        assert InventoryPage(driver).obtener_titulo() == "Products"
+    else:
+        assert login_page.obtener_mensaje_error() != ""
