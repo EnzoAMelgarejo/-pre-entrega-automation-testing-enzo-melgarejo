@@ -1,0 +1,5 @@
+usuario,clave,debe_funcionar,descripcion
+standard_user,secret_sauce,True,valido
+locked_out_user,secret_sauce,False,bloqueado
+problem_user,secret_sauce,True,valido
+usuario_malo,password_malo,False,invalido

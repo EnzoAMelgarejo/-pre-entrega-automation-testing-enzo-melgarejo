@@ -1,0 +1,57 @@
+@ui
+Feature: Funcionalidad de carrito en SauceDemo # features/cart.feature:2
+
+  @ui
+  Feature: Funcionalidad de carrito en SauceDemo  # features/cart.feature:2
+
+  @regression
+  Scenario: Agregar un producto al carrito                              # features/cart.feature:8
+    Given que el usuario inicia sesion con standard_user                # features/steps/cart_steps.py:6
+    When el usuario agrega el producto "Sauce Labs Backpack" al carrito # features/steps/cart_steps.py:14
+    Then el contador del carrito debe ser "1"                           # features/steps/cart_steps.py:20
+
+  @regression
+  Scenario Outline: Agregar multiples productos al carrito -- @1.1      # features/cart.feature:19
+    Given que el usuario inicia sesion con standard_user                # features/steps/cart_steps.py:6
+    When el usuario agrega el producto "Sauce Labs Backpack" al carrito # features/steps/cart_steps.py:14
+    Then el producto "Sauce Labs Backpack" debe estar en el carrito     # features/steps/cart_steps.py:27
+
+  @regression
+  Scenario Outline: Agregar multiples productos al carrito -- @1.2        # features/cart.feature:20
+    Given que el usuario inicia sesion con standard_user                  # features/steps/cart_steps.py:6
+    When el usuario agrega el producto "Sauce Labs Bike Light" al carrito # features/steps/cart_steps.py:14
+    Then el producto "Sauce Labs Bike Light" debe estar en el carrito     # features/steps/cart_steps.py:27
+
+  @regression
+  Scenario Outline: Agregar multiples productos al carrito -- @1.3          # features/cart.feature:21
+    Given que el usuario inicia sesion con standard_user                    # features/steps/cart_steps.py:6
+    When el usuario agrega el producto "Sauce Labs Bolt T-Shirt" al carrito # features/steps/cart_steps.py:14
+    Then el producto "Sauce Labs Bolt T-Shirt" debe estar en el carrito     # features/steps/cart_steps.py:27
+
+@ui
+Feature: Autenticacion de usuarios en SauceDemo # features/login.feature:2
+
+  @ui
+  Feature: Autenticacion de usuarios en SauceDemo  # features/login.feature:2
+
+  @smoke
+  Scenario: Login exitoso con credenciales validas                               # features/login.feature:8
+    Given que el usuario abre la pagina de login                                 # None
+    When el usuario ingresa el usuario "standard_user" y la clave "secret_sauce" # None
+    Then debe ser redirigido al inventario                                       # None
+
+  Scenario Outline: Login fallido con credenciales invalidas -- @1.1                 # features/login.feature:18
+    Given que el usuario abre la pagina de login                                     # None
+    When el usuario ingresa el usuario "standard_user" y la clave "clave_incorrecta" # None
+    Then debe ver un mensaje de error visible                                        # None
+
+  Scenario Outline: Login fallido con credenciales invalidas -- @1.2               # features/login.feature:19
+    Given que el usuario abre la pagina de login                                   # None
+    When el usuario ingresa el usuario "locked_out_user" y la clave "secret_sauce" # None
+    Then debe ver un mensaje de error visible                                      # None
+
+  Scenario Outline: Login fallido con credenciales invalidas -- @1.3   # features/login.feature:20
+    Given que el usuario abre la pagina de login                       # None
+    When el usuario ingresa el usuario "" y la clave ""                # None
+    Then debe ver un mensaje de error visible                          # None
+

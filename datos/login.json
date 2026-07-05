@@ -1,0 +1,14 @@
+[
+    {
+        "usuario": "eve.holt@reqres.in",
+        "clave": "cityslicka",
+        "debe_funcionar": true,
+        "descripcion": "valido"
+    },
+    {
+        "usuario": "eve.holt@reqres.in",
+        "clave": "",
+        "debe_funcionar": false,
+        "descripcion": "sin_password"
+    }
+]

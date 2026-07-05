@@ -1,49 +1,44 @@
-# Proyecto Final - Automation Testing
+# Proyecto Final - Automation Testing con POM
+**Autor:** Tu Melgerjo Enzo
+**Repositorio:** https://github.com/EnzoAMelgarejo/-pre-entrega-automation-testing-enzo-melgarejo.git
 
 ## Propósito del proyecto
+Este proyecto automatiza pruebas funcionales sobre SauceDemo utilizando Selenium WebDriver y Pytest, implementando el patrón de diseño Page Object Model (POM).
 
-Este proyecto tiene como objetivo automatizar pruebas funcionales sobre la página SauceDemo utilizando Selenium WebDriver y Pytest.
-
-Las pruebas automatizadas verifican funcionalidades principales como:
-- Login de usuario
+Las pruebas cubren:
+- Login de usuario (exitoso y fallido)
 - Navegación del catálogo
-- Validación de productos
 - Interacción con el carrito de compras
+- Flujo completo end-to-end
 
 ---
-
 ## Tecnologías utilizadas
-
 - Python
 - Pytest
 - Selenium WebDriver
-- Git
-- GitHub
+- Git / GitHub
 
 ---
-
 ## Instalación de dependencias
-
-Instalar las dependencias necesarias con:
-
 ```bash
-pip install selenium
-pip install pytest
-pip install pytest-html
+pip install -r requirements.txt
 ```
 
 ---
-
 ## Ejecución de pruebas
-
-Ejecutar todas las pruebas:
-
+Todas las pruebas:
 ```bash
 pytest -v
 ```
-
-Generar reporte HTML:
-
+Solo tests de regresión:
 ```bash
-pytest -v --html=reporte.html
+pytest -m regression -v
+```
+Solo tests de smoke:
+```bash
+pytest -m smoke -v
+```
+Generar reporte HTML:
+```bash
+pytest --html=reporte_pom.html --self-contained-html -v
 ```

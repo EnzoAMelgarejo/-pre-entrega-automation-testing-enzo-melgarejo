@@ -1,40 +1,35 @@
-#1) Automatización de login
+import pytest
+from pages import LoginPage, InventoryPage
+from utils.datos import leer_csv_login
+from utils.logger_config import logger
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+CASOS_LOGIN = leer_csv_login('datos/login.csv')
 
-from utils.helpers import esperar, driver_create #helpers de expected_conditions
+@pytest.mark.parametrize("usuario, clave, debe_funcionar, descripcion", CASOS_LOGIN)
+@pytest.mark.login
+@pytest.mark.regression
+def test_login_exitoso(driver, usuario, clave, descripcion, debe_funcionar):
+    """
+    Test parametrizado que verifica el login con datos del CSV
+    """
+    logger.info(f"Probando login '{descripcion}' con usuario={usuario} (se espera éxito={debe_funcionar})")
+    login_page = LoginPage(driver)
+    login_page.abrir().login_completo(usuario, clave)
 
-def test_login():
-    
-    driver = driver_create()
+    if debe_funcionar:
+        assert InventoryPage(driver).obtener_titulo() == "Products"
+        logger.info(f"Login exitoso para {usuario}, se accedió a Products")
+    else:
+        assert login_page.obtener_mensaje_error() != ""
+        logger.info(f"Login fallido como se esperaba para {usuario}, mensaje de error mostrado")
 
-    try:
-
-        driver.get("https://saucedemo.com") #Ingreso a la pagina
-
-        #Espera explicita
-        username = esperar(
-            driver,
-            EC.presence_of_element_located((By.ID, "user-name"))
-        )
-
-        username.send_keys("standard_user")
-
-        driver.find_element(By.ID, 'password').send_keys('secret_sauce')
-        driver.find_element(By.CSS_SELECTOR, 'input[type="submit"]' ).click()
-
-        #Validación de inventario
-
-        assert '/inventory.html' in driver.current_url
-
-        #Asercion de titulos
-        
-        titulo = driver.find_element(By.CSS_SELECTOR, 'div.header_secondary_container .title').text
-        assert titulo == 'Products'
-
-        logo = driver.find_element(By.CLASS_NAME, "app_logo").text
-        assert logo == "Swag Labs"
-
-    finally:
-        driver.quit()   #Cierre limpio.
+@pytest.mark.smoke
+def test_login_usuario_valido_smoke(driver):
+    """
+    Test de smoke para verificar que al menos un login funciona
+    """
+    logger.info("Ejecutando smoke test de login con standard_user")
+    login_page = LoginPage(driver)
+    login_page.abrir().login_completo("standard_user", "secret_sauce")
+    assert InventoryPage(driver).obtener_titulo() == "Products"
+    logger.info("Smoke test de login exitoso")

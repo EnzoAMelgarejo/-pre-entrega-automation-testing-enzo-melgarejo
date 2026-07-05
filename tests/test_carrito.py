@@ -1,57 +1,51 @@
-#3) Interacción con productos
+import pytest
+from pages import CartPage, InventoryPage
+from utils.datos import leer_json
+from utils.logger_config import logger
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+PRODUCTOS = leer_json('datos/productos.json')
 
-from utils.helpers import driver_create, esperar
-from utils.login import login
+@pytest.mark.carrito
+@pytest.mark.regression
+def test_contiene_productos(usuario_logueado: InventoryPage):
+    logger.info("Agregando primer producto y verificando contenido del carrito")
+    cart_page = usuario_logueado.agregar_primer_producto().ir_al_carrito()
+    assert len(cart_page.obtener_productos()) > 0
 
 
-def test_carrito():
+@pytest.mark.carrito
+def test_obtener_nombres(usuario_en_carrito: CartPage):
+    logger.info("Verificando nombres de productos en el carrito")
+    assert usuario_en_carrito.obtener_nombres()
 
-    driver = driver_create()
 
-    try:
+@pytest.mark.carrito
+@pytest.mark.regression
+def test_continuar_comprando(usuario_en_carrito: CartPage):
+    logger.info("Volviendo al inventario desde el carrito")
+    inventory_page = usuario_en_carrito.volver_al_inventario()
+    assert "inventory.html" in inventory_page.driver.current_url
 
-        # Login automatizado
-        login(driver)
 
-        # Espera catálogo
-        esperar(driver,EC.presence_of_element_located((By.CLASS_NAME, "inventory_item")))
+@pytest.mark.parametrize("producto", PRODUCTOS)
+@pytest.mark.carrito
+@pytest.mark.regression
+def test_agregar_producto_desde_json(usuario_logueado: InventoryPage, producto):
+    """
+    Test que agrega cada producto del JSON al carrito
+    """
+    logger.info(f"Agregando producto '{producto}' al carrito desde JSON")
+    cart_page = usuario_logueado.agregar_producto_por_nombre(producto).ir_al_carrito()
+    assert producto in cart_page.obtener_nombres()
+    logger.info(f"Producto '{producto}' confirmado en el carrito")
 
-        productos = driver.find_elements(By.CSS_SELECTOR,'div.inventory_item')
 
-        # Agregar primer producto
-        productos[0].find_element(By.TAG_NAME, 'button').click()
-
-        # Guardar nombre y precio
-        producto0 = productos[0].find_element(By.CSS_SELECTOR,'div.inventory_item_name').text
-
-        precio0 = productos[0].find_element(By.CSS_SELECTOR,'div.inventory_item_price').text
-
-        print(f'Nombre: {producto0}, Precio: {precio0}')
-
-        # Verificar badge carrito
-        badge = driver.find_element(By.CLASS_NAME,'shopping_cart_badge').text
-
-        assert badge == '1'
-
-        # Ir al carrito
-        driver.find_element(By.CSS_SELECTOR,'.shopping_cart_link').click()
-
-        # Espera carrito
-        esperar(driver,EC.presence_of_element_located((By.CLASS_NAME, "cart_item")))
-
-        # Validar URL carrito
-        assert '/cart.html' in driver.current_url
-
-        # Validar producto agregado
-        item_carrito = driver.find_element(By.CSS_SELECTOR,'.inventory_item_name').text
-
-        assert item_carrito == producto0
-
-        print('Producto en carrito OK ->', item_carrito)
-
-    finally:
-
-        driver.quit()
+@pytest.mark.smoke
+def test_carrito_smoke(usuario_logueado: InventoryPage):
+    """
+    Test de smoke que verifica funcionalidad básica del carrito
+    """
+    logger.info("Ejecutando smoke test de carrito")
+    cart_page = usuario_logueado.agregar_primer_producto().ir_al_carrito()
+    assert len(cart_page.obtener_productos()) > 0
+    logger.info("Smoke test de carrito exitoso")
