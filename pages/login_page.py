@@ -3,17 +3,22 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class LoginPage:
+    
+    #URL de la pagina
     URI = "https://www.saucedemo.com/"
 
+    #Locators
     _USER_INPUT = (By.ID, "user-name")
     _PASS_INPUT = (By.ID, "password")
     _LOGIN_BUTTON = (By.ID, "login-button")
     _ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
 
+    #Constructor
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 10)
 
+    #Metodos
     def abrir(self):
         self.driver.get(self.URI)
         return self

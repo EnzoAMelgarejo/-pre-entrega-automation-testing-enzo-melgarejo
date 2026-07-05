@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 class InventoryPage:
     _TITLE = (By.CLASS_NAME, "title")
     _PRODUCTS = (By.CSS_SELECTOR, "[data-test='inventory-item']")
+    _PRODUCT_NAME = (By.CSS_SELECTOR, "[data-test='inventory-item-name']")
     _ADD_BUTTONS = (By.CSS_SELECTOR, "button[data-test*='add-to-cart']")
     _CART_BADGE = (By.CSS_SELECTOR, "[data-test='shopping-cart-badge']")
     _CART_LINK = (By.CSS_SELECTOR, "[data-test='shopping-cart-link']")
@@ -41,6 +42,18 @@ class InventoryPage:
         primer_boton.click()
 
         return self
+
+    def agregar_producto_por_nombre(self, nombre_producto: str):
+        """
+        Añade un producto al carrito buscándolo por su nombre visible.
+        """
+        items = self.driver.find_elements(*self._PRODUCTS)
+        for item in items:
+            nombre = item.find_element(*self._PRODUCT_NAME).text
+            if nombre == nombre_producto:
+                item.find_element(*self._ADD_BUTTONS).click()
+                return self
+        raise ValueError(f"Producto '{nombre_producto}' no encontrado")
 
     def obtener_contador_carrito(self):
         """Obtiene el número
