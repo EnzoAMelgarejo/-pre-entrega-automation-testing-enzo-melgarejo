@@ -1,5 +1,6 @@
 # conftest.py
 
+import os
 import pytest
 import pathlib
 import requests
@@ -33,7 +34,8 @@ def driver():
 
     firefox_options = Options()
 
-    # firefox_options.add_argument("--headless") #Para CI/CD
+    if os.getenv("CI") == "true":
+        firefox_options.add_argument("--headless")
     firefox_options.add_argument("--disable-dev-shm-usage")
     service = Service()
     driver = webdriver.Firefox(service=service, options=firefox_options)
