@@ -25,6 +25,10 @@ def pytest_html_results_table_row(report, cells):
 
     cells.insert(2, getattr(report, 'page_url', '-'))
 
+#Titulo en el reporte vía Hook. No fue aceptado por Github Actions dentro del pytest.ini
+def pytest_html_report_title(report):
+    report.title = "TalentoLab - Resumen de ejecución"
+
 @pytest.fixture(scope = "function")
 def driver():
     """Fixture que proporciona
