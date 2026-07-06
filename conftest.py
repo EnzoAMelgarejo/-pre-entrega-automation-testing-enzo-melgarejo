@@ -1,5 +1,6 @@
 # conftest.py
 
+import os
 import pytest
 import pathlib
 import requests
@@ -24,6 +25,10 @@ def pytest_html_results_table_row(report, cells):
 
     cells.insert(2, getattr(report, 'page_url', '-'))
 
+#Titulo en el reporte vía Hook. No fue aceptado por Github Actions dentro del pytest.ini
+def pytest_html_report_title(report):
+    report.title = "TalentoLab - Resumen de ejecución"
+
 @pytest.fixture(scope = "function")
 def driver():
     """Fixture que proporciona
@@ -33,7 +38,8 @@ def driver():
 
     firefox_options = Options()
 
-    # firefox_options.add_argument("--headless") #Para CI/CD
+    if os.getenv("CI") == "true":
+        firefox_options.add_argument("--headless")
     firefox_options.add_argument("--disable-dev-shm-usage")
     service = Service()
     driver = webdriver.Firefox(service=service, options=firefox_options)

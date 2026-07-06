@@ -2,3 +2,7 @@ selenium
 pytest
 pytest-html
 pytest-metadata
+behave
+requests
+faker
+pytest-check
